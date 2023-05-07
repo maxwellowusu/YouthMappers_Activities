@@ -39,7 +39,24 @@ total_project = df['projectsID'].value_counts()
 #############################################################
 
 fig_pie = px.pie(df, values=total_project, names='status', title='Overall status')
-fig_line = px.line(df, x="date", y=total_project, title='line')
+
+
+# Assuming your data is stored in a Pandas DataFrame called df
+df['date'] = pd.to_datetime(df['date'])  # Convert date column to datetime format
+df['half_year'] = df['date'].dt.to_period('6M')  # Add new column with half-year periods
+
+# print (df.head())
+
+# Count the values in each half-year period
+# counts_by_half_year = df['projectsID'].value_counts()
+total_project = df['projectsID'].value_counts()
+counts_by_half_year = df.groupby(['half_year']).count()
+# print (counts_by_half_year)
+# # Plot the results using a bar chart
+#
+fig_line = px.line(counts_by_half_year, x=counts_by_half_year.index, y=counts_by_half_year.projectsID, title='line')
+
+# fig_line = px.line(df, x="date", y=total_project, title='line')
 
 #############################################################
 
@@ -61,15 +78,15 @@ app.layout = html.Div\
         html.Div([
             html.Br(),
             html.Div([dcc.Graph(figure=fig_pie)], className="col", style={"width": "20%", "border-right": "1px solid #ccc"}),
-            html.Div([dcc.Graph(figure=fig_line)], className="col", style={"width": "50%", "border-right": "1px solid #ccc"}),
+            html.Div([dcc.Graph(figure=fig_line)], className="col", style={"width": "30%", "border-right": "1px solid #ccc"}),
             html.Div([dcc.Graph(figure=fig)], className="col", style={"width": "50%", "border-right": "1px solid #ccc"}),
         ],  style={'display': 'flex', 'flex-direction': 'row'}),
 
         html.Div([
             html.Br(),
             html.Div([dcc.Graph({})], className="col", style={"width": "20%", "border-right": "1px solid #ccc"}),
-            html.Div([dcc.Graph({})], className="col", style={"width": "50%", "border-right": "1px solid #ccc"}),
-            html.Div([dcc.Graph({})], className="col", style={"width": "50%", "border-right": "1px solid #ccc"}),
+            html.Div([dcc.Graph({})], className="col", style={"width": "40%", "border-right": "1px solid #ccc"}),
+            html.Div([dcc.Graph({})], className="col", style={"width": "40%", "border-right": "1px solid #ccc"}),
         ], style={'display': 'flex', 'flex-direction': 'row'}),
 
         dcc.Input(id='input-1', type='number', value=total_project),
